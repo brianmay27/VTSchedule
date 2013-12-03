@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">VT Schedulator</string>
+    <string name="action_settings">Settings</string>
+    <string name="Min">Min</string>
+    <string name="Max">Max</string>
+    <string name="GetSchedules">Get Schedules</string>
+    <string name="SavedSchedules">Saved Schedules</string>
+    <string name="SaveSchedule">Save Schedule</string>
+    <string name="Username">Username</string>
+    <string name="Password">Password</string>
+    <string name="Save">Save</string>
+    <string name="Major">Major</string>
+    <string name="Settings">Settings</string>
+
+    <string-array name="majors">
+        <item>AAEC - Agricultural and Applied Econ</item>
+        <item>ACIS - Accounting and Information Syst</item>
+        <item>AE - Aerospace Engineering</item>
+        <item>AEM - Applied Economic Management</item>
+        <item>AGRB - Agribusiness</item>
+        <item>AGSC - Agricultural Sciences</item>
+        <item>AHRM - Apprl, Housing, and Resource Mgt</item>
+        <item>APSC - Animal and Poultry Sciences</item>
+        <item>ARCH - Architecture</item>
+        <item>ART - Art</item>
+        <item>ARTF - Art (Fine Arts)</item>
+        <item>AT - Agricultural Technology</item>
+        <item>BC - Building Construction</item>
+        <item>BCHM - Biochemistry</item>
+        <item>BIOC - Biochemistry</item>
+        <item>BIOL - Biological Sciences</item>
+        <item>BIT - Business Information Tech</item>
+        <item>BSE - Biological Systems Engineering</item>
+        <item>CE - Civil Engineering</item>
+        <item>CEEN - Civil Engineering</item>
+        <item>CEM - Construction Engineering and Mgt</item>
+        <item>CHE - Chemical Engineering</item>
+        <item>CHEM - Chemistry</item>
+        <item>CLA - Classical Studies</item>
+        <item>COMM - Communication</item>
+        <item>CPE - Computer Engineering</item>
+        <item>CS - Computer Science</item>
+        <item>CSES - Crop and Soil Environmental Scie</item>
+        <item>CSS - Crop and Soil Environmental Scie</item>
+        <item>DAE - Aerospace Engineering</item>
+        <item>DASC - Dairy Science</item>
+        <item>DOE - Ocean Engineering</item>
+        <item>ECAS - Economics, Science</item>
+        <item>ECON - Economics, Business</item>
+        <item>EE - Electrical Engineering</item>
+        <item>EHRT - Environmental Horticulture</item>
+        <item>EI - Environmental Informatics</item>
+        <item>ENGL - English</item>
+        <item>ENSC - Environmental Science</item>
+        <item>EPP - Enviro Policy and Planning</item>
+        <item>ERM - Environmental Resource Mgmt</item>
+        <item>ESM - Engineering Sci and Mechanics</item>
+        <item>FCSE - Family and Consumer Sciences Edu</item>
+        <item>FIN - Finance</item>
+        <item>FORS - Forestry</item>
+        <item>FR - French</item>
+        <item>FSCI - Fisheries Science</item>
+        <item>FST - Food Science and Technology</item>
+        <item>FW - Forestry and Wildlife</item>
+        <item>GEOG - Geography</item>
+        <item>GEOS - Geosciences</item>
+        <item>GER - German</item>
+        <item>HD - Human Development</item>
+        <item>HIST - History</item>
+        <item>HNFE - Hmn Nutrtn Foods and Exercise</item>
+        <item>HORT - Horticulture</item>
+        <item>HSE - Humanities, Science, and Environ</item>
+        <item>HTM - Hospitality and Tourism Mgt</item>
+        <item>IDS - Industrial Design</item>
+        <item>IDST - Interdisciplinary Studies</item>
+        <item>IS - International Studies</item>
+        <item>ISE - Industrial and Systems Engineering</item>
+        <item>ITDS - Interior Design</item>
+        <item>LAR - Landscape Architecture</item>
+        <item>LCON - Landscape Contracting</item>
+        <item>MATH - Mathematics</item>
+        <item>ME - Mechanical Engineering</item>
+        <item>MGT - Management</item>
+        <item>MINE - Mining Engineering</item>
+        <item>MKED - Marketing Education</item>
+        <item>MKTG - Marketing Management</item>
+        <item>MSE - Materials Sci and Engineering</item>
+        <item>MTRG - Meteorology</item>
+        <item>MUS - Music</item>
+        <item>NRC - Natural Resources Conservation</item>
+        <item>OE - Ocean Engineering</item>
+        <item>PHIL - Philosophy</item>
+        <item>PHYS - Physics</item>
+        <item>PSCI - Political Science</item>
+        <item>PSYC - Psychology</item>
+        <item>PUA - Public and Urban Affairs</item>
+        <item>RLCL - Religion and Culture</item>
+        <item>RUS - Russian</item>
+        <item>SOC - Sociology</item>
+        <item>SPAN - Spanish</item>
+        <item>STAT - Statistics</item>
+        <item>TA - Theatre Arts</item>
+        <item>WOOD - Wood Sci and Forest Products</item>
+        <item>WSCI - Wildlife Science</item>
+    </string-array>
+        <string name="Back">Back</string>
+        <string name="Next">Next</string>
+
+</resources>
