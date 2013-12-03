@@ -1,9 +1,0 @@
-.settings
-assets
-bin
-gen
-libs
-.classpath
-.project
-proguard-project
-project.properties
