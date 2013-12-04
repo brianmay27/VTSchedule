@@ -50,6 +50,7 @@ public class SchedulesActivity extends Activity implements OnFinished{
 	int min;
 	int max;
 	String[] classes;
+	ClassAdapter adapter;
 
 	// Display Variables
 	ArrayList<String> m_FinalList = new ArrayList<String>();
@@ -93,9 +94,8 @@ public class SchedulesActivity extends Activity implements OnFinished{
 
 			        ListView listview = (ListView) findViewById(R.id.listView1);
 			        makeFinalList();
-			        ClassAdapter adapter = new ClassAdapter(v.getContext());
 			        adapter.setList(m_SortList);
-			        listview.setAdapter(adapter);
+			        adapter.notifyDataSetChanged();
 
 			        m_scheduleCount++;
 				}
@@ -139,7 +139,7 @@ public class SchedulesActivity extends Activity implements OnFinished{
 
         ListView listview = (ListView) findViewById(R.id.listView1);
         makeFinalList();
-        ClassAdapter adapter = new ClassAdapter(this);
+        adapter = new ClassAdapter(this);
         adapter.setList(m_SortList);
         listview.setAdapter(adapter);
 

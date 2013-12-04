@@ -76,7 +76,7 @@ public class ClassAdapter extends BaseAdapter
                 Day = "Friday";
             }
             StringBuilder builder = new StringBuilder();
-            builder.append(Day);
+            builder.append(Day + "\n");
             for (int k = 0; k < m_SortList.get(i).size(); k++) {
                 builder.append("CRN: " + m_SortList.get(i).get(k).getCrn()
                         + "\nClassName: " + m_SortList.get(i).get(k).getName()
@@ -85,6 +85,7 @@ public class ClassAdapter extends BaseAdapter
             }
             builder.append("\n");
             view.setText(builder.toString());
+            view.setTextSize(20);
             return convertView;
     }
 
