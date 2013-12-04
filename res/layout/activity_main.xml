@@ -57,4 +57,35 @@
         android:layout_alignParentRight="true"
         android:text="@string/GetSchedules" />
 
+    <TextView
+        android:id="@+id/viewAdd"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/addButton"
+        android:layout_alignLeft="@+id/textView2"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/seekBar2"
+        android:layout_marginTop="28dp"
+        android:text="TextView" />
+
+    <Button
+        android:id="@+id/addButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/button2"
+        android:layout_alignRight="@+id/button2"
+        android:text="Add Class" />
+
+    <EditText
+        android:id="@+id/addClas"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/button2"
+        android:layout_alignLeft="@+id/button2"
+        android:layout_toLeftOf="@+id/addButton"
+        android:ems="10" >
+
+        <requestFocus />
+    </EditText>
+
 </RelativeLayout>

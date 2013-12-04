@@ -31,12 +31,12 @@ public class SettingsActivity extends Activity {
 			setContentView(R.layout.activity_settings);
 
 			// GUI elements
-			username = (EditText) this.findViewById(R.id.editText1);
+			username = (EditText) this.findViewById(R.id.addClas);
 			password = (EditText) this.findViewById(R.id.editText2);
 			majorSpinner = (Spinner) this.findViewById(R.id.spinner1);
 			saveButton = (Button) this.findViewById(R.id.button4);
-			userText = (TextView) this.findViewById(R.id.textView3);
-			passText = (TextView) this.findViewById(R.id.textView4);
+			userText = (TextView) this.findViewById(R.id.addClass);
+			passText = (TextView) this.findViewById(R.id.viewAdd);
 			majorText = (TextView) this.findViewById(R.id.textView5);
 
 			// Listener for button to save user information

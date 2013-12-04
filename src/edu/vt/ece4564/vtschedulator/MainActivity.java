@@ -4,6 +4,7 @@
 
 package edu.vt.ece4564.vtschedulator;
 
+import java.util.ArrayList;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -22,6 +23,11 @@ public class MainActivity extends Activity {
 	SeekBar seekMin;
 	SeekBar seekMax;
 	Button getButton;
+	Button addClass;
+	TextView classesAdded;
+	TextView addText;
+	ArrayList<String> classes = new ArrayList<String>();
+	boolean first = true;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +41,35 @@ public class MainActivity extends Activity {
 			seekMin = (SeekBar) this.findViewById(R.id.seekBar1);
 			seekMax = (SeekBar) this.findViewById(R.id.seekBar2);
 			getButton = (Button) this.findViewById(R.id.button2);
+			addClass = (Button)findViewById(R.id.addButton);
+			classesAdded = (TextView) findViewById(R.id.viewAdd);
+			addText = (TextView) findViewById(R.id.addClas);
+			classesAdded.setText("No additional classes added");
+			addText.setText("Add classes to include");
+			addText.setOnClickListener(new OnClickListener() {
+
+                @Override
+                public void onClick(View v)
+                {
+                    addText.setText("");
+
+                }
+            });
+
+			addClass.setOnClickListener(new OnClickListener() {
+
+                @Override
+                public void onClick(View v)
+                {
+                    if (first) classesAdded.setText("");
+                    first = false;
+                    String text = addText.getText().toString();
+                    classes.add(text);
+                    addText.setText("Class added");
+                    classesAdded.append(text + "\r");
+
+                }
+            });
 
 			// Listener for button to get schedules
 			getButton.setOnClickListener(new OnClickListener() {
@@ -56,6 +91,7 @@ public class MainActivity extends Activity {
 						intent.putExtra("Major", major);
 						intent.putExtra("Min", min);
 						intent.putExtra("Max", max);
+						intent.putExtra("classes", classes.toArray(new String[classes.size()]));
 						startActivity(intent);
 						finish();
 					}

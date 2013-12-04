@@ -4,6 +4,9 @@
 
 package edu.vt.ece4564.vtschedulator;
 
+import android.R.color;
+import android.content.res.ColorStateList;
+import android.widget.TextView;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
@@ -14,13 +17,10 @@ import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ExecutionException;
-
 import org.jasypt.util.text.BasicTextEncryptor;
-
 import edu.vt.ece4564.shared.Course;
 import edu.vt.ece4564.shared.CourseTime;
 import edu.vt.ece4564.shared.Schedule;
-
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Activity;
@@ -33,7 +33,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 
-public class SchedulesActivity extends Activity {
+public class SchedulesActivity extends Activity implements OnFinished{
 	// Global Variables
 	Button backButton;
 	Button nextButton;
@@ -49,6 +49,7 @@ public class SchedulesActivity extends Activity {
 	String major;
 	int min;
 	int max;
+	String[] classes;
 
 	// Display Variables
 	ArrayList<String> m_FinalList = new ArrayList<String>();
@@ -58,7 +59,7 @@ public class SchedulesActivity extends Activity {
 	public ArrayList<Schedule> displaySchedule;
 	int m_scheduleCount;
 	Timer timer = new Timer();
-	GetStatus getStatus = new GetStatus();
+	GetStatus getStatus = new GetStatus(this);
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -86,19 +87,17 @@ public class SchedulesActivity extends Activity {
 			// Listener to get new Schedule
 			nextButton.setOnClickListener(new OnClickListener() {
 				public void onClick(View v) {
-					newCount++;
-					makeCurrentSchedule();
-					makeSortList();
+			        newCount++;
+			        makeCurrentSchedule();
+			        makeSortList();
 
-					ListView listview = (ListView) findViewById(R.id.listView1);
-					makeFinalList();
+			        ListView listview = (ListView) findViewById(R.id.listView1);
+			        makeFinalList();
+			        ClassAdapter adapter = new ClassAdapter(v.getContext());
+			        adapter.setList(m_SortList);
+			        listview.setAdapter(adapter);
 
-					ArrayAdapter<String> myarrayAdapter = new ArrayAdapter<String>(
-							getApplicationContext(),
-							android.R.layout.simple_list_item_1, m_FinalList);
-					listview.setAdapter(myarrayAdapter);
-
-					m_scheduleCount++;
+			        m_scheduleCount++;
 				}
 			});
 
@@ -109,6 +108,8 @@ public class SchedulesActivity extends Activity {
 			major = i.getStringExtra("Major");
 			min = i.getIntExtra("Min", 12);
 			max = i.getIntExtra("Max", 19);
+			classes = i.getStringArrayExtra("classes");
+			min = 6;
 
 			// Request Schedules
 			GetTask task = new GetTask();
@@ -128,6 +129,23 @@ public class SchedulesActivity extends Activity {
 			e.printStackTrace();
 		}
 	}
+    @Override
+    public void postRun(ArrayList<Schedule> schedules)
+    {
+        displaySchedule = new ArrayList<Schedule>(schedules);
+        newCount++;
+        makeCurrentSchedule();
+        makeSortList();
+
+        ListView listview = (ListView) findViewById(R.id.listView1);
+        makeFinalList();
+        ClassAdapter adapter = new ClassAdapter(this);
+        adapter.setList(m_SortList);
+        listview.setAdapter(adapter);
+
+        m_scheduleCount++;
+
+    }
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -164,13 +182,17 @@ public class SchedulesActivity extends Activity {
 	/**
 	 * // ----------------------------------------------------------------------
 	 * --- /** Requests a new schedule to be made
-	 * 
+	 *
 	 * @author Brian
 	 * @version Dec 2, 2013
 	 */
 	protected class GetStatus extends TimerTask {
 		public String latestId;
 		public String User;
+		OnFinished listner;
+		public GetStatus(OnFinished listner) {
+		    this.listner = listner;
+		}
 
 		@Override
 		public void run() {
@@ -188,7 +210,7 @@ public class SchedulesActivity extends Activity {
 						new InputStreamReader(connection.getInputStream()));
 				if (reader.readLine().equals("Success")) {
 					timer.cancel();
-					RetTask ret = new RetTask();
+					RetTask ret = new RetTask(listner);
 					if (newCount == 5) {
 						newCount = 0;
 						getNew++;
@@ -204,7 +226,7 @@ public class SchedulesActivity extends Activity {
 	/**
 	 * // ----------------------------------------------------------------------
 	 * --- /** Requests a new schedule to be made
-	 * 
+	 *
 	 * @author Brian
 	 * @version Dec 2, 2013
 	 */
@@ -233,7 +255,13 @@ public class SchedulesActivity extends Activity {
 						+ URLEncoder.encode(params[2], "UTF-8") + "&min="
 						+ URLEncoder.encode(params[3], "UTF-8") + "&max="
 						+ URLEncoder.encode(params[4], "UTF-8");
-				URL url = new URL(urlLocal + send);
+				StringBuilder builder = new StringBuilder();
+				builder.append(send);
+				int i = 0;
+				for(String clas : classes) {
+				    builder.append("&class" + String.valueOf(i++) + "=" + URLEncoder.encode(clas, "UTF-8"));
+				}
+				URL url = new URL(urlLocal + builder.toString());
 				HttpURLConnection connection = (HttpURLConnection) url
 						.openConnection();
 				connection.setRequestMethod("GET");
@@ -254,13 +282,17 @@ public class SchedulesActivity extends Activity {
 	/**
 	 * // ----------------------------------------------------------------------
 	 * --- /** Gets the schedule from the server. All parameters are Strings
-	 * 
+	 *
 	 * @author Brian
 	 * @version Dec 2, 2013
 	 */
 	protected class RetTask extends
 			AsyncTask<String, Integer, ArrayList<Schedule>> {
 		ArrayList<Schedule> schedules = null;
+		OnFinished listner;
+		public RetTask(OnFinished listner) {
+		    this.listner = listner;
+		}
 
 		@Override
 		/**
@@ -302,20 +334,7 @@ public class SchedulesActivity extends Activity {
 
 		@Override
 		protected void onPostExecute(ArrayList<Schedule> result) {
-			displaySchedule = new ArrayList<Schedule>(result);
-			newCount++;
-			makeCurrentSchedule();
-			makeSortList();
-
-			ListView listview = (ListView) findViewById(R.id.listView1);
-			makeFinalList();
-
-			ArrayAdapter<String> myarrayAdapter = new ArrayAdapter<String>(
-					getApplicationContext(),
-					android.R.layout.simple_list_item_1, m_FinalList);
-			listview.setAdapter(myarrayAdapter);
-
-			m_scheduleCount++;
+		    listner.postRun(result);
 		}
 	}
 
@@ -409,4 +428,5 @@ public class SchedulesActivity extends Activity {
 					.get(i));
 		}
 	}
+
 }

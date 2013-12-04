@@ -8,7 +8,7 @@
     android:paddingTop="@dimen/activity_vertical_margin" >
 
     <TextView
-        android:id="@+id/textView3"
+        android:id="@+id/addClass"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@+id/editText2"
@@ -17,12 +17,12 @@
         android:textSize="22sp" />
 
     <EditText
-        android:id="@+id/editText1"
+        android:id="@+id/addClas"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_marginLeft="18dp"
-        android:layout_toRightOf="@+id/textView4"
+        android:layout_toRightOf="@+id/viewAdd"
         android:ems="10"
         android:inputType="textPersonName" >
 
@@ -30,11 +30,11 @@
     </EditText>
 
     <TextView
-        android:id="@+id/textView4"
+        android:id="@+id/viewAdd"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/editText2"
-        android:layout_alignRight="@+id/textView3"
+        android:layout_alignRight="@+id/addClass"
         android:text="@string/Password"
         android:textSize="22sp" />
 
@@ -42,8 +42,8 @@
         android:id="@+id/editText2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/editText1"
-        android:layout_below="@+id/editText1"
+        android:layout_alignLeft="@+id/addClas"
+        android:layout_below="@+id/addClas"
         android:layout_marginTop="16dp"
         android:ems="10"
         android:inputType="textPassword" />
@@ -52,8 +52,8 @@
         android:id="@+id/textView5"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/textView4"
-        android:layout_below="@+id/textView4"
+        android:layout_alignLeft="@+id/viewAdd"
+        android:layout_below="@+id/viewAdd"
         android:layout_marginTop="53dp"
         android:text="@string/Major"
         android:textSize="22sp" />
@@ -65,7 +65,7 @@
         android:layout_alignRight="@+id/editText2"
         android:layout_below="@+id/editText2"
         android:layout_marginTop="38dp"
-        android:layout_toRightOf="@+id/textView4"
+        android:layout_toRightOf="@+id/viewAdd"
         android:entries="@array/majors" />
 
     <Button
