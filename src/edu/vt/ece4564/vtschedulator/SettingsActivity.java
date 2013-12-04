@@ -1,5 +1,6 @@
 /*
  * VT Schedulator
+ * 12/11/2013
  */
 
 package edu.vt.ece4564.vtschedulator;
@@ -13,7 +14,13 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 
+//-------------------------------------------------------------------------
+/**
+ * Settings Activity 
+ * Allows the user to set their Username, Password, and Major.
+ */
 public class SettingsActivity extends Activity {
 	// Global Variables
 	EditText username;
@@ -42,19 +49,21 @@ public class SettingsActivity extends Activity {
 			// Listener for button to save user information
 			saveButton.setOnClickListener(new OnClickListener() {
 				public void onClick(View v) {
-					// Switch to Main Activity
 					String user = username.getText().toString();
 					String pass = password.getText().toString();
 					String major = majorSpinner.getSelectedItem().toString();
 					major = major.substring(0, major.indexOf(" "));
 
-					Intent intent = new Intent(getApplicationContext(),
-							MainActivity.class);
-					intent.putExtra("Username", user);
-					intent.putExtra("Password", pass);
-					intent.putExtra("Major", major);
+					SharedPreferences.Editor editor = getPreferences(
+							MODE_PRIVATE).edit();
+					editor.putString("Username", user);
+					editor.putString("Password", pass);
+					editor.putString("Major", major);
+					editor.commit();
 
-					startActivity(intent);
+					// Switch to Main Activity
+					startActivity(new Intent(getApplicationContext(),
+							MainActivity.class));
 					finish();
 				}
 			});

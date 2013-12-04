@@ -107,5 +107,6 @@
     </string-array>
         <string name="Back">Back</string>
         <string name="Next">Next</string>
+        <string name="Sample">Sample</string>
 
 </resources>
