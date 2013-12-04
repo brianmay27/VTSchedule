@@ -38,8 +38,8 @@ public class SchedulesActivity extends Activity implements OnFinished{
 	Button backButton;
 	Button nextButton;
 	ListView scheduleView;
-	static final String host = "bmacattack.dyndns.org";
-	// static final String host = "172.31.169.180";
+	//static final String host = "bmacattack.dyndns.org";
+	static final String host = "192.168.1.209";
 	static final String urlLocal = "http://" + host + ":8081/api?";
 	String id = null;
 	int newCount = 0;

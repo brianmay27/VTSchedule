@@ -66,7 +66,7 @@ public class MainActivity extends Activity {
                     String text = addText.getText().toString();
                     classes.add(text);
                     addText.setText("Class added");
-                    classesAdded.append(text + "\r");
+                    classesAdded.append(text + "\n");
 
                 }
             });
