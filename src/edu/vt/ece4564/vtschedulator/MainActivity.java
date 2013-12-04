@@ -1,9 +1,13 @@
 /*
  * VT Schedulator
+ * 12/11/2013
  */
 
 package edu.vt.ece4564.vtschedulator;
 
+import java.util.regex.Pattern;
+import android.preference.PreferenceManager;
+import android.content.SharedPreferences;
 import java.util.ArrayList;
 import android.app.Activity;
 import android.content.Intent;
@@ -16,6 +20,12 @@ import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+//-------------------------------------------------------------------------
+/**
+ * Main Activity
+ * Allows the user to pick the minimum and maximum number of credits they
+ * want to take as well as any classes they already know they want to take.
+ */
 public class MainActivity extends Activity {
 	// Global Variables
 	TextView minText;
@@ -28,6 +38,9 @@ public class MainActivity extends Activity {
 	TextView addText;
 	ArrayList<String> classes = new ArrayList<String>();
 	boolean first = true;
+	String username;
+	String password;
+	String major;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -41,59 +54,60 @@ public class MainActivity extends Activity {
 			seekMin = (SeekBar) this.findViewById(R.id.seekBar1);
 			seekMax = (SeekBar) this.findViewById(R.id.seekBar2);
 			getButton = (Button) this.findViewById(R.id.button2);
-			addClass = (Button)findViewById(R.id.addButton);
+			addClass = (Button) findViewById(R.id.addButton);
 			classesAdded = (TextView) findViewById(R.id.viewAdd);
 			addText = (TextView) findViewById(R.id.addClas);
 			classesAdded.setText("No additional classes added");
 			addText.setText("Add classes to include");
+			SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
+			username = pref.getString("pid", null);
+			password = pref.getString("password", null);
+
+
+
 			addText.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					addText.setText("");
+				}
+			});
 
-                @Override
-                public void onClick(View v)
-                {
-                    addText.setText("");
-
-                }
-            });
-
+			// Listener for button to add a class
 			addClass.setOnClickListener(new OnClickListener() {
-
-                @Override
-                public void onClick(View v)
-                {
-                    if (first) classesAdded.setText("");
-                    first = false;
-                    String text = addText.getText().toString();
-                    classes.add(text);
-                    addText.setText("Class added");
-                    classesAdded.append(text + "\n");
-
-                }
-            });
+				@Override
+				public void onClick(View v) {
+					if (first)
+						classesAdded.setText("");
+					first = false;
+					String text = addText.getText().toString();
+					Pattern pattern = Pattern.compile("[a-zA-Z]{2,4} [0-9]{4}");
+					if (!pattern.matcher(text).matches()) return;
+					classes.add(text);
+					addText.setText("Class added");
+					classesAdded.append(text + "\n");
+				}
+			});
 
 			// Listener for button to get schedules
 			getButton.setOnClickListener(new OnClickListener() {
 				public void onClick(View v) {
 					if (v.equals(getButton)) {
 						// Switch to Schedule Activity
-						Intent i = getIntent();
-						String user = i.getStringExtra("Username");
-						String pass = i.getStringExtra("Password");
-						String major = i.getStringExtra("Major");
-
+					    if (username == null || password == null) {
+					        return;
+					    }
 						int min = seekMin.getProgress() + 12;
 						int max = seekMax.getProgress() + 12;
 
-						Intent intent = new Intent(getApplicationContext(),
+						Intent intent = new Intent(MainActivity.this,
 								SchedulesActivity.class);
-						intent.putExtra("Username", user);
-						intent.putExtra("Password", pass);
-						intent.putExtra("Major", major);
 						intent.putExtra("Min", min);
 						intent.putExtra("Max", max);
-						intent.putExtra("classes", classes.toArray(new String[classes.size()]));
+						intent.putExtra("username", username);
+						intent.putExtra("password", password);
+						intent.putExtra("classes",
+								classes.toArray(new String[classes.size()]));
 						startActivity(intent);
-						finish();
 					}
 				}
 			});
@@ -102,11 +116,11 @@ public class MainActivity extends Activity {
 		}
 	}
 
+	// Inflate the menu
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		try {
-			// Inflate the menu; this adds items to the action bar if it is
-			// present.
+			// This adds items to the action bar if it is present.
 			getMenuInflater().inflate(R.menu.main, menu);
 			return true;
 		} catch (Exception e) {
@@ -115,15 +129,15 @@ public class MainActivity extends Activity {
 		}
 	}
 
+	// If menu item is selected
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		try {
 			switch (item.getItemId()) {
 			// Switch to Settings Activity
 			case R.id.Settings:
-				startActivity(new Intent(getApplicationContext(),
-						SettingsActivity.class));
-				finish();
+				Intent settings = new Intent(MainActivity.this, SettingsActivity.class);
+				startActivity(settings);
 				return true;
 			default:
 				return super.onOptionsItemSelected(item);

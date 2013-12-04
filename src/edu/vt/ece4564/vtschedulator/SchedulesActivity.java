@@ -1,12 +1,12 @@
 /*
  * VT Schedulator
+ * 12/11/2013
  */
 
 package edu.vt.ece4564.vtschedulator;
 
-import android.R.color;
-import android.content.res.ColorStateList;
-import android.widget.TextView;
+import java.util.ListIterator;
+import java.util.Iterator;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
@@ -25,21 +25,26 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 
-public class SchedulesActivity extends Activity implements OnFinished{
+//-------------------------------------------------------------------------
+/**
+ * Schedules Activity
+ * Passes user input to the server and waits for a reply.
+ */
+public class SchedulesActivity extends Activity implements OnFinished {
 	// Global Variables
 	Button backButton;
 	Button nextButton;
 	ListView scheduleView;
-	//static final String host = "bmacattack.dyndns.org";
-	static final String host = "192.168.1.209";
+	static final String host = "bmacattack.dyndns.org";
+	//static final String host = "192.168.1.209";
 	static final String urlLocal = "http://" + host + ":8081/api?";
 	String id = null;
 	int newCount = 0;
@@ -53,14 +58,15 @@ public class SchedulesActivity extends Activity implements OnFinished{
 	ClassAdapter adapter;
 
 	// Display Variables
-	ArrayList<String> m_FinalList = new ArrayList<String>();
-	ArrayList<ArrayList<Course>> m_SortList = new ArrayList<ArrayList<Course>>();
-	ArrayList<Course> m_TestList = new ArrayList<Course>();
-	ArrayList<Course> m_temp = new ArrayList<Course>();
+	ArrayList<String> finalList = new ArrayList<String>();
+	ArrayList<ArrayList<Course>> sortList = new ArrayList<ArrayList<Course>>();
+	ArrayList<Course> testList = new ArrayList<Course>();
 	public ArrayList<Schedule> displaySchedule;
-	int m_scheduleCount;
+	private ListIterator<Schedule> scheduleIttr;
+	int scheduleCount;
 	Timer timer = new Timer();
 	GetStatus getStatus = new GetStatus(this);
+	boolean first = true;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -70,46 +76,43 @@ public class SchedulesActivity extends Activity implements OnFinished{
 
 			// GUI elements
 			backButton = (Button) this.findViewById(R.id.button5);
-			nextButton = (Button) this.findViewById(R.id.button7);
-			scheduleView = (ListView) this.findViewById(R.id.listView1);
+			backButton.setEnabled(false);
 
-			m_scheduleCount = 0;
+			nextButton = (Button) this.findViewById(R.id.button7);
+			nextButton.setEnabled(false);
+			scheduleView = (ListView) this.findViewById(R.id.listView1);
+			user = getIntent().getStringExtra("username");
+			pass = getIntent().getStringExtra("password");
+	         min = getIntent().getIntExtra("Min", 12);
+            max = getIntent().getIntExtra("Max", 19);
+            classes = getIntent().getStringArrayExtra("classes");
+            min = 3;
 
 			// Listener for button to go back to main
 			backButton.setOnClickListener(new OnClickListener() {
 				public void onClick(View v) {
 					// Switch to Main Activity
-					startActivity(new Intent(getApplicationContext(),
-							MainActivity.class));
-					finish();
+                    ListView listview = (ListView) findViewById(R.id.listView1);
+                    nextButton.setEnabled(true);
+                    adapter.setList(scheduleIttr.previous());
+                    if (!scheduleIttr.hasPrevious()) backButton.setEnabled(false);
+                    adapter.notifyDataSetChanged();
+
 				}
 			});
 
 			// Listener to get new Schedule
 			nextButton.setOnClickListener(new OnClickListener() {
 				public void onClick(View v) {
-			        newCount++;
-			        makeCurrentSchedule();
-			        makeSortList();
 
 			        ListView listview = (ListView) findViewById(R.id.listView1);
-			        makeFinalList();
-			        adapter.setList(m_SortList);
+			        backButton.setEnabled(true);
+			        adapter.setList(scheduleIttr.next());
 			        adapter.notifyDataSetChanged();
-
-			        m_scheduleCount++;
+			        if (!scheduleIttr.hasNext()) nextButton.setEnabled(false);
 				}
 			});
 
-			// Get all user input
-			Intent i = getIntent();
-			user = i.getStringExtra("Username");
-			pass = i.getStringExtra("Password");
-			major = i.getStringExtra("Major");
-			min = i.getIntExtra("Min", 12);
-			max = i.getIntExtra("Max", 19);
-			classes = i.getStringArrayExtra("classes");
-			min = 6;
 
 			// Request Schedules
 			GetTask task = new GetTask();
@@ -129,29 +132,35 @@ public class SchedulesActivity extends Activity implements OnFinished{
 			e.printStackTrace();
 		}
 	}
-    @Override
-    public void postRun(ArrayList<Schedule> schedules)
-    {
-        displaySchedule = new ArrayList<Schedule>(schedules);
-        newCount++;
-        makeCurrentSchedule();
-        makeSortList();
 
-        ListView listview = (ListView) findViewById(R.id.listView1);
-        makeFinalList();
-        adapter = new ClassAdapter(this);
-        adapter.setList(m_SortList);
-        listview.setAdapter(adapter);
-
-        m_scheduleCount++;
-
+    public void onBackPressed() {
+        finish();
     }
 
 	@Override
+	public void postRun(ArrayList<Schedule> schedules) {
+	    if (schedules == null) return;
+		displaySchedule = new ArrayList<Schedule>(schedules);
+		scheduleIttr = displaySchedule.listIterator();
+		if (scheduleIttr.hasNext()) nextButton.setEnabled(true);
+		backButton.setEnabled(false);
+//		makeCurrentSchedule();
+//		makeSortList();
+
+        ListView listview = (ListView) findViewById(R.id.listView1);
+        //makeFinalList();
+        adapter = new ClassAdapter(this);
+        adapter.setList(scheduleIttr.next());
+        listview.setAdapter(adapter);
+
+
+	}
+
+	// Inflate the menu
+	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		try {
-			// Inflate the menu; this adds items to the action bar if it is
-			// present.
+			// This adds items to the action bar if it is present.
 			getMenuInflater().inflate(R.menu.main, menu);
 			return true;
 		} catch (Exception e) {
@@ -160,6 +169,7 @@ public class SchedulesActivity extends Activity implements OnFinished{
 		}
 	}
 
+	// If menu item is selected
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		try {
@@ -179,19 +189,14 @@ public class SchedulesActivity extends Activity implements OnFinished{
 		}
 	}
 
-	/**
-	 * // ----------------------------------------------------------------------
-	 * --- /** Requests a new schedule to be made
-	 *
-	 * @author Brian
-	 * @version Dec 2, 2013
-	 */
+	// Wait for the Schedules to be made
 	protected class GetStatus extends TimerTask {
 		public String latestId;
 		public String User;
 		OnFinished listner;
+
 		public GetStatus(OnFinished listner) {
-		    this.listner = listner;
+			this.listner = listner;
 		}
 
 		@Override
@@ -208,9 +213,11 @@ public class SchedulesActivity extends Activity implements OnFinished{
 				connection.connect();
 				BufferedReader reader = new BufferedReader(
 						new InputStreamReader(connection.getInputStream()));
+
 				if (reader.readLine().equals("Success")) {
 					timer.cancel();
 					RetTask ret = new RetTask(listner);
+
 					if (newCount == 5) {
 						newCount = 0;
 						getNew++;
@@ -223,24 +230,23 @@ public class SchedulesActivity extends Activity implements OnFinished{
 		}
 	};
 
-	/**
-	 * // ----------------------------------------------------------------------
-	 * --- /** Requests a new schedule to be made
-	 *
-	 * @author Brian
-	 * @version Dec 2, 2013
-	 */
+	// Requests a Schedule
 	protected class GetTask extends AsyncTask<String, Integer, String> {
-
 		@Override
-		/**
-		 *  @param params[0] The username
-		 *  @param params[1] The password in plain text
-		 *  @param params[2] The users major, currently it is as hokieSpa requires. eg bs in Cpe is bscpecpe
-		 *  @param params[3] the min amount of credits to take
-		 *  @param params[4] The max amount of credits to take
+		/*
+		 * @param params[0] The username
 		 *
-		 *  @return an String containing the unique value to later grab the schedules
+		 * @param params[1] The password in plain text
+		 *
+		 * @param params[2] The users major, currently it is as hokieSpa
+		 * requires. eg bs in Cpe is bscpecpe
+		 *
+		 * @param params[3] the min amount of credits to take
+		 *
+		 * @param params[4] The max amount of credits to take
+		 *
+		 * @return an String containing the unique value to later grab the
+		 * schedules
 		 */
 		protected String doInBackground(String... params) {
 			String requestCode = null;
@@ -255,12 +261,16 @@ public class SchedulesActivity extends Activity implements OnFinished{
 						+ URLEncoder.encode(params[2], "UTF-8") + "&min="
 						+ URLEncoder.encode(params[3], "UTF-8") + "&max="
 						+ URLEncoder.encode(params[4], "UTF-8");
+
 				StringBuilder builder = new StringBuilder();
 				builder.append(send);
 				int i = 0;
-				for(String clas : classes) {
-				    builder.append("&class" + String.valueOf(i++) + "=" + URLEncoder.encode(clas, "UTF-8"));
+
+				for (String clas : classes) {
+					builder.append("&class" + String.valueOf(i++) + "="
+							+ URLEncoder.encode(clas, "UTF-8"));
 				}
+
 				URL url = new URL(urlLocal + builder.toString());
 				HttpURLConnection connection = (HttpURLConnection) url
 						.openConnection();
@@ -279,30 +289,28 @@ public class SchedulesActivity extends Activity implements OnFinished{
 		}
 	}
 
-	/**
-	 * // ----------------------------------------------------------------------
-	 * --- /** Gets the schedule from the server. All parameters are Strings
-	 *
-	 * @author Brian
-	 * @version Dec 2, 2013
-	 */
+	// Gets the schedule from the server. All parameters are Strings
 	protected class RetTask extends
 			AsyncTask<String, Integer, ArrayList<Schedule>> {
 		ArrayList<Schedule> schedules = null;
 		OnFinished listner;
+
 		public RetTask(OnFinished listner) {
-		    this.listner = listner;
+			this.listner = listner;
 		}
 
 		@Override
-		/**
+		/*
+		 * @param params[0] The username
 		 *
-		 *  @param params[0] The username
-		 *  @param params[1] The password in plain text
-		 *  @param params[2] the Id to be fetched, returned from the request
-		 *  @param params[3] The location. 0 gets the first 5 schedules, 1 gets the next 5 and so on
+		 * @param params[1] The password in plain text
 		 *
-		 *  @return an Arraylist of schedules
+		 * @param params[2] the Id to be fetched, returned from the request
+		 *
+		 * @param params[3] The location. 0 gets the first 5 schedules, 1 gets
+		 * the next 5 and so on
+		 *
+		 * @return an Arraylist of schedules
 		 */
 		protected ArrayList<Schedule> doInBackground(String... params) {
 			try {
@@ -315,12 +323,14 @@ public class SchedulesActivity extends Activity implements OnFinished{
 								"UTF-8") + "&id="
 						+ URLEncoder.encode(params[2], "UTF-8") + "&loc="
 						+ URLEncoder.encode(params[3], "UTF-8");
+
 				URL url = new URL(urlLocal + send);
 				HttpURLConnection connection = (HttpURLConnection) url
 						.openConnection();
 				connection.setRequestMethod("GET");
 				connection.setDoInput(true);
 				connection.connect();
+
 				ObjectInputStream input = new ObjectInputStream(
 						connection.getInputStream());
 				schedules = (ArrayList<Schedule>) input.readObject();
@@ -329,15 +339,17 @@ public class SchedulesActivity extends Activity implements OnFinished{
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+
 			return schedules;
 		}
 
 		@Override
 		protected void onPostExecute(ArrayList<Schedule> result) {
-		    listner.postRun(result);
+			listner.postRun(result);
 		}
 	}
 
+	// Sorts the List of Courses
 	private void makeSortList() {
 		ArrayList<Course> day1 = new ArrayList<Course>();
 		ArrayList<Course> day2 = new ArrayList<Course>();
@@ -345,41 +357,41 @@ public class SchedulesActivity extends Activity implements OnFinished{
 		ArrayList<Course> day4 = new ArrayList<Course>();
 		ArrayList<Course> day5 = new ArrayList<Course>();
 
-		for (int i = 0; i < m_TestList.size(); i++) {
-			CourseTime test = m_TestList.get(i).getTime();
+		for (int i = 0; i < testList.size(); i++) {
+			CourseTime test = testList.get(i).getTime();
 
 			int[] days;
 			days = test.getDays();
 
 			for (int k = 0; k < days.length; k++) {
 				if (days[k] == 1) {
-					day1.add(m_TestList.get(i));
+					day1.add(testList.get(i));
 				} else if (days[k] == 2) {
-					day2.add(m_TestList.get(i));
+					day2.add(testList.get(i));
 				} else if (days[k] == 3) {
-					day3.add(m_TestList.get(i));
+					day3.add(testList.get(i));
 				} else if (days[k] == 4) {
-					day4.add(m_TestList.get(i));
+					day4.add(testList.get(i));
 				} else if (days[k] == 5) {
-					day5.add(m_TestList.get(i));
+					day5.add(testList.get(i));
 				}
-
 			}
-
 		}
 
-		m_SortList.add(sortTimes(day1));
-		m_SortList.add(sortTimes(day2));
-		m_SortList.add(sortTimes(day3));
-		m_SortList.add(sortTimes(day4));
-		m_SortList.add(sortTimes(day5));
-
+		sortList.add(sortTimes(day1));
+		sortList.add(sortTimes(day2));
+		sortList.add(sortTimes(day3));
+		sortList.add(sortTimes(day4));
+		sortList.add(sortTimes(day5));
 	}
 
+	// Sorts the Course Times
 	private ArrayList<Course> sortTimes(ArrayList<Course> courses) {
 		Course courseMin = new Course();
+
 		for (int i = 0; i < courses.size(); i++) {
 			courseMin = courses.get(i);
+
 			for (int k = 0; k < courses.size(); k++) {
 				if (courses.get(k).getTime().getStartTime() > courseMin
 						.getTime().getStartTime()) {
@@ -390,14 +402,16 @@ public class SchedulesActivity extends Activity implements OnFinished{
 					courses.set(k, courseTemp);
 				}
 			}
-
 		}
+
 		return courses;
 	}
 
+	// Makes the final list of courses
 	private void makeFinalList() {
 		String Day = "";
-		for (int i = 0; i < m_SortList.size(); i++) {
+
+		for (int i = 0; i < sortList.size(); i++) {
 			if (i == 0) {
 				Day = "Monday";
 			} else if (i == 1) {
@@ -409,24 +423,31 @@ public class SchedulesActivity extends Activity implements OnFinished{
 			} else if (i == 4) {
 				Day = "Friday";
 			}
-			m_FinalList.add(Day);
-			for (int k = 0; k < m_SortList.get(i).size(); k++) {
-				m_FinalList.add("CRN: " + m_SortList.get(i).get(k).getCrn()
-						+ "\nClassName: " + m_SortList.get(i).get(k).getName()
+
+			finalList.add(Day);
+
+			for (int k = 0; k < sortList.get(i).size(); k++) {
+				finalList.add("CRN: " + sortList.get(i).get(k).getCrn()
+						+ "\nClassName: " + sortList.get(i).get(k).getName()
 						+ "\nTime: "
-						+ m_SortList.get(i).get(k).getTime().toString());
+						+ sortList.get(i).get(k).getTime().toString());
 			}
-			m_FinalList.add("\n");
+
+			finalList.add("\n");
 		}
 	}
 
+	// Makes the Schedules to be displayed
 	public void makeCurrentSchedule() {
-		m_TestList.clear();
-		for (int i = 0; i < displaySchedule.get(m_scheduleCount).getCourses()
+		testList.clear();
+
+		if (first)
+			scheduleCount = 0;
+		first = false;
+
+		for (int i = 0; i < displaySchedule.get(scheduleCount).getCourses()
 				.size(); i++) {
-			m_TestList.add(displaySchedule.get(m_scheduleCount).getCourses()
-					.get(i));
+			testList.add(displaySchedule.get(scheduleCount).getCourses().get(i));
 		}
 	}
-
 }

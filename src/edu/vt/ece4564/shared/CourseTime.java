@@ -172,6 +172,24 @@ public class CourseTime implements Serializable {
 		}
 		return darray;
 	}
+	@Override
+	public boolean equals(Object other) {
+	    if (other instanceof String) {
+	        String o = (String)other;
+	        if (this.days.contains(dayStringToInt(o))) return true;
+	        else return false;
+	    }
+	    else return false;
+	}
+	private int dayStringToInt(String day) {
+	    int dayr = 0;
+	    if (day.toLowerCase().equals("monday")) dayr = 1;
+	    else if (day.toLowerCase().equals("tuesday")) dayr = 2;
+	    else if (day.toLowerCase().equals("wednesday")) dayr = 3;
+	    else if (day.toLowerCase().equals("thursday")) dayr = 4;
+	    else if (day.toLowerCase().equals("friday")) dayr = 5;
+	    return dayr;
+	}
 
 	public String toString() {
 		int start = startTime / 60;

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+    <PreferenceCategory android:title="App Settings" android:key="main_settings">
+        <EditTextPreference android:title="PID" android:key="pid" android:enabled="true" android:defaultValue="" android:dialogTitle="PID" android:dialogMessage="Enter your PID wintout @vt.edu"/>
+        <EditTextPreference android:title="Password" android:key="password" android:enabled="true" android:defaultValue="" android:dialogTitle="Password" android:dialogMessage="Provide your login password" android:inputType="textPassword"/>
+        <ListPreference android:dialogTitle="Major" android:entries="@array/majors" android:key="majors"/>
+    </PreferenceCategory>
+    
+    
+
+</PreferenceScreen>
