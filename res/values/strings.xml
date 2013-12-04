@@ -105,8 +105,9 @@
         <item>WOOD - Wood Sci and Forest Products</item>
         <item>WSCI - Wildlife Science</item>
     </string-array>
-        <string name="Back">Back</string>
-        <string name="Next">Next</string>
-        <string name="Sample">Sample</string>
+
+    <string name="Back">Back</string>
+    <string name="Next">Next</string>
+    <string name="Sample">Sample</string>
 
 </resources>
