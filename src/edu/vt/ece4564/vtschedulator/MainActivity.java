@@ -5,6 +5,7 @@
 
 package edu.vt.ece4564.vtschedulator;
 
+import android.widget.CheckBox;
 import java.util.regex.Pattern;
 import android.preference.PreferenceManager;
 import android.content.SharedPreferences;
@@ -34,6 +35,8 @@ public class MainActivity extends Activity {
 	SeekBar seekMax;
 	Button getButton;
 	Button addClass;
+	Button getLast;
+	CheckBox useDars;
 	TextView classesAdded;
 	TextView addText;
 	ArrayList<String> classes = new ArrayList<String>();
@@ -57,6 +60,8 @@ public class MainActivity extends Activity {
 			addClass = (Button) findViewById(R.id.addButton);
 			classesAdded = (TextView) findViewById(R.id.viewAdd);
 			addText = (TextView) findViewById(R.id.addClas);
+			getLast = (Button) findViewById(R.id.getLast);
+			useDars = (CheckBox) findViewById(R.id.useDars);
 			classesAdded.setText("No additional classes added");
 			addText.setText("Add classes to include");
 			SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
@@ -71,6 +76,27 @@ public class MainActivity extends Activity {
 					addText.setText("");
 				}
 			});
+
+			getLast.setOnClickListener(new OnClickListener() {
+
+                @Override
+                public void onClick(View v)
+                {
+                    if (username == null || password == null) {
+                        return;
+                    }
+                    int min = seekMin.getProgress() + 12;
+                    int max = seekMax.getProgress() + 12;
+
+                    Intent intent = new Intent(MainActivity.this,
+                            SchedulesActivity.class);
+                    intent.putExtra("username", username);
+                    intent.putExtra("password", password);
+                    intent.putExtra("last", true);
+                    startActivity(intent);
+
+                }
+            });
 
 			// Listener for button to add a class
 			addClass.setOnClickListener(new OnClickListener() {
@@ -107,6 +133,7 @@ public class MainActivity extends Activity {
 						intent.putExtra("password", password);
 						intent.putExtra("classes",
 								classes.toArray(new String[classes.size()]));
+						intent.putExtra("useDars", useDars.isChecked());
 						startActivity(intent);
 					}
 				}

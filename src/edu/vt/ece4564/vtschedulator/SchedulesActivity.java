@@ -54,6 +54,8 @@ public class SchedulesActivity extends Activity implements OnFinished {
 	String major;
 	int min;
 	int max;
+	boolean useDars;
+	boolean last;
 	String[] classes;
 	ClassAdapter adapter;
 
@@ -83,10 +85,11 @@ public class SchedulesActivity extends Activity implements OnFinished {
 			scheduleView = (ListView) this.findViewById(R.id.listView1);
 			user = getIntent().getStringExtra("username");
 			pass = getIntent().getStringExtra("password");
+			last = getIntent().getBooleanExtra("last", false);
 	         min = getIntent().getIntExtra("Min", 12);
             max = getIntent().getIntExtra("Max", 19);
+            useDars = getIntent().getBooleanExtra("useDars", true);
             classes = getIntent().getStringArrayExtra("classes");
-            min = 3;
 
 			// Listener for button to go back to main
 			backButton.setOnClickListener(new OnClickListener() {
@@ -107,7 +110,12 @@ public class SchedulesActivity extends Activity implements OnFinished {
 
 			        ListView listview = (ListView) findViewById(R.id.listView1);
 			        backButton.setEnabled(true);
-			        adapter.setList(scheduleIttr.next());
+			        Schedule sch = scheduleIttr.next();
+			        if (sch == null || sch.getCourses() == null) {
+			            nextButton.setEnabled(false);
+			            return;
+			        }
+			        adapter.setList(sch);
 			        adapter.notifyDataSetChanged();
 			        if (!scheduleIttr.hasNext()) nextButton.setEnabled(false);
 				}
@@ -115,18 +123,23 @@ public class SchedulesActivity extends Activity implements OnFinished {
 
 
 			// Request Schedules
-			GetTask task = new GetTask();
-			task.execute(user, pass, "BSCPECPE", Integer.toString(min),
-					Integer.toString(max));
-			try {
-				id = task.get();
-				getStatus.latestId = id;
-				getStatus.User = user;
-				timer.scheduleAtFixedRate(getStatus, 60000, 30000);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			} catch (ExecutionException e) {
-				e.printStackTrace();
+			if (!last) {
+    			GetTask task = new GetTask();
+    			task.execute(user, pass, "BSCPECPE", Integer.toString(min),
+    					Integer.toString(max), String.valueOf(useDars));
+    			try {
+    				id = task.get();
+    				getStatus.latestId = id;
+    				getStatus.User = user;
+    				timer.scheduleAtFixedRate(getStatus, 60000, 30000);
+    			} catch (InterruptedException e) {
+    				e.printStackTrace();
+    			} catch (ExecutionException e) {
+    				e.printStackTrace();
+    			}
+			} else {
+			    RetTask task = new RetTask(this);
+			    task.execute(user, pass, "last", "0");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -260,7 +273,8 @@ public class SchedulesActivity extends Activity implements OnFinished {
 								"UTF-8") + "&major="
 						+ URLEncoder.encode(params[2], "UTF-8") + "&min="
 						+ URLEncoder.encode(params[3], "UTF-8") + "&max="
-						+ URLEncoder.encode(params[4], "UTF-8");
+						+ URLEncoder.encode(params[4], "UTF-8") + "&usedars="
+						+ URLEncoder.encode(params[5], "UTF-8");
 
 				StringBuilder builder = new StringBuilder();
 				builder.append(send);
