@@ -78,8 +78,10 @@ public class ClassAdapter extends BaseAdapter {
 		builder.append(Day);
 		ArrayList<Course> courses = new ArrayList<Course>();
 		for(Course course : sortList.getCourses()) {
-		    CourseTime time = course.getTime();
-		    if (time.equals(Day)) courses.add(course);
+		    if (course.getTime() != null) {
+		        CourseTime time = course.getTime();
+		        if (time.equals(Day)) courses.add(course);
+		    }
 		}
 
 		for (int k = 0; k < courses.size(); k++) {

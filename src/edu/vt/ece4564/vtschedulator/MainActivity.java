@@ -5,6 +5,7 @@
 
 package edu.vt.ece4564.vtschedulator;
 
+import android.widget.Toast;
 import android.widget.CheckBox;
 import java.util.regex.Pattern;
 import android.preference.PreferenceManager;
@@ -68,6 +69,57 @@ public class MainActivity extends Activity {
 			username = pref.getString("pid", null);
 			password = pref.getString("password", null);
 
+			maxText.setText("Max:"+((Integer)(seekMax.getProgress()+12)).toString());
+            minText.setText("Min:"+((Integer)(seekMin.getProgress()+12)).toString());
+
+            seekMin.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener(){
+
+                   @Override
+                   public void onProgressChanged(SeekBar seekBar, int progress,
+                     boolean fromUser) {
+                    // TODO Auto-generated method stub
+
+                   }
+
+                @Override
+                public void onStartTrackingTouch(SeekBar seekBar) {
+                    // TODO Auto-generated method stub
+
+                }
+
+                @Override
+                public void onStopTrackingTouch(SeekBar seekBar) {
+                    // TODO Auto-generated method stub
+                    //seekBarValue.setText(seekMin.getProgress());
+                    //Toast.makeText(MainActivity.this, ((Integer)(seekMin.getProgress()+12)).toString(), Toast.LENGTH_SHORT).show();
+                    minText.setText("Min:"+((Integer)(seekMin.getProgress()+12)).toString());
+
+                } });
+
+            seekMax.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener(){
+
+                   @Override
+                   public void onProgressChanged(SeekBar seekBar, int progress,
+                     boolean fromUser) {
+                    // TODO Auto-generated method stub
+
+                   }
+
+                @Override
+                public void onStartTrackingTouch(SeekBar seekBar) {
+                    // TODO Auto-generated method stub
+
+                }
+
+                @Override
+                public void onStopTrackingTouch(SeekBar seekBar) {
+                    // TODO Auto-generated method stub
+                    //seekBarValue.setText(seekMin.getProgress());
+                    //Toast.makeText(MainActivity.this, ((Integer)(seekMin.getProgress()+12)).toString(), Toast.LENGTH_SHORT).show();
+                    maxText.setText("Max:"+((Integer)(seekMax.getProgress()+12)).toString());
+
+                } });
+
 
 
 			addText.setOnClickListener(new OnClickListener() {
@@ -124,13 +176,14 @@ public class MainActivity extends Activity {
 					    }
 						int min = seekMin.getProgress() + 12;
 						int max = seekMax.getProgress() + 12;
-
+						Toast.makeText(getApplicationContext(), "I'll be back!", Toast.LENGTH_LONG).show();
 						Intent intent = new Intent(MainActivity.this,
 								SchedulesActivity.class);
 						intent.putExtra("Min", min);
 						intent.putExtra("Max", max);
 						intent.putExtra("username", username);
 						intent.putExtra("password", password);
+
 						intent.putExtra("classes",
 								classes.toArray(new String[classes.size()]));
 						intent.putExtra("useDars", useDars.isChecked());

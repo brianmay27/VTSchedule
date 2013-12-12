@@ -5,8 +5,12 @@
 
 package edu.vt.ece4564.vtschedulator;
 
+import android.app.PendingIntent;
+import android.app.Notification;
+import android.app.NotificationManager;
 import java.util.ListIterator;
 import java.util.Iterator;
+import android.content.Context;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
@@ -43,8 +47,8 @@ public class SchedulesActivity extends Activity implements OnFinished {
 	Button backButton;
 	Button nextButton;
 	ListView scheduleView;
-	static final String host = "bmacattack.dyndns.org";
-	//static final String host = "192.168.1.209";
+	//static final String host = "bmacattack.dyndns.org";
+	static final String host = "192.168.1.209";
 	static final String urlLocal = "http://" + host + ":8081/api?";
 	String id = null;
 	int newCount = 0;
@@ -90,6 +94,7 @@ public class SchedulesActivity extends Activity implements OnFinished {
             max = getIntent().getIntExtra("Max", 19);
             useDars = getIntent().getBooleanExtra("useDars", true);
             classes = getIntent().getStringArrayExtra("classes");
+
 
 			// Listener for button to go back to main
 			backButton.setOnClickListener(new OnClickListener() {
@@ -138,8 +143,9 @@ public class SchedulesActivity extends Activity implements OnFinished {
     				e.printStackTrace();
     			}
 			} else {
-			    RetTask task = new RetTask(this);
+			    RetTask task = new RetTask(SchedulesActivity.this);
 			    task.execute(user, pass, "last", "0");
+
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -153,6 +159,26 @@ public class SchedulesActivity extends Activity implements OnFinished {
 	@Override
 	public void postRun(ArrayList<Schedule> schedules) {
 	    if (schedules == null) return;
+	    NotificationManager notificationManager =
+            (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
+ Notification myNotification = new Notification(android.R.drawable.ic_dialog_alert,
+             "Notification!",
+             System.currentTimeMillis());
+           Context context = getApplicationContext();
+           String notificationTitle = "Schedulator";
+           String notificationText = "I'm Back! With your Schedule!";
+           Intent myIntent = new Intent(Intent.ACTION_VIEW);
+           PendingIntent pendingIntent
+             = PendingIntent.getActivity(SchedulesActivity.this,
+               0, myIntent,
+               Intent.FLAG_ACTIVITY_NEW_TASK);
+           myNotification.defaults |= Notification.DEFAULT_SOUND;
+           myNotification.flags |= Notification.FLAG_AUTO_CANCEL;
+           myNotification.setLatestEventInfo(context,
+              notificationTitle,
+              notificationText,
+              pendingIntent);
+           notificationManager.notify(4, myNotification);
 		displaySchedule = new ArrayList<Schedule>(schedules);
 		scheduleIttr = displaySchedule.listIterator();
 		if (scheduleIttr.hasNext()) nextButton.setEnabled(true);
@@ -363,42 +389,6 @@ public class SchedulesActivity extends Activity implements OnFinished {
 		}
 	}
 
-	// Sorts the List of Courses
-	private void makeSortList() {
-		ArrayList<Course> day1 = new ArrayList<Course>();
-		ArrayList<Course> day2 = new ArrayList<Course>();
-		ArrayList<Course> day3 = new ArrayList<Course>();
-		ArrayList<Course> day4 = new ArrayList<Course>();
-		ArrayList<Course> day5 = new ArrayList<Course>();
-
-		for (int i = 0; i < testList.size(); i++) {
-			CourseTime test = testList.get(i).getTime();
-
-			int[] days;
-			days = test.getDays();
-
-			for (int k = 0; k < days.length; k++) {
-				if (days[k] == 1) {
-					day1.add(testList.get(i));
-				} else if (days[k] == 2) {
-					day2.add(testList.get(i));
-				} else if (days[k] == 3) {
-					day3.add(testList.get(i));
-				} else if (days[k] == 4) {
-					day4.add(testList.get(i));
-				} else if (days[k] == 5) {
-					day5.add(testList.get(i));
-				}
-			}
-		}
-
-		sortList.add(sortTimes(day1));
-		sortList.add(sortTimes(day2));
-		sortList.add(sortTimes(day3));
-		sortList.add(sortTimes(day4));
-		sortList.add(sortTimes(day5));
-	}
-
 	// Sorts the Course Times
 	private ArrayList<Course> sortTimes(ArrayList<Course> courses) {
 		Course courseMin = new Course();
@@ -421,47 +411,4 @@ public class SchedulesActivity extends Activity implements OnFinished {
 		return courses;
 	}
 
-	// Makes the final list of courses
-	private void makeFinalList() {
-		String Day = "";
-
-		for (int i = 0; i < sortList.size(); i++) {
-			if (i == 0) {
-				Day = "Monday";
-			} else if (i == 1) {
-				Day = "Tuesday";
-			} else if (i == 2) {
-				Day = "Wednesday";
-			} else if (i == 3) {
-				Day = "Thursday";
-			} else if (i == 4) {
-				Day = "Friday";
-			}
-
-			finalList.add(Day);
-
-			for (int k = 0; k < sortList.get(i).size(); k++) {
-				finalList.add("CRN: " + sortList.get(i).get(k).getCrn()
-						+ "\nClassName: " + sortList.get(i).get(k).getName()
-						+ "\nTime: "
-						+ sortList.get(i).get(k).getTime().toString());
-			}
-
-			finalList.add("\n");
-		}
-	}
-
-	// Makes the Schedules to be displayed
-	public void makeCurrentSchedule() {
-		testList.clear();
-
-		if (first)
-			scheduleCount = 0;
-		first = false;
-
-		for (int i = 0; i < displaySchedule.get(scheduleCount).getCourses()
-				.size(); i++) {
-			testList.add(displaySchedule.get(scheduleCount).getCourses().get(i));
-		}
-	}
 }
